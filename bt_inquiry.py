@@ -6,6 +6,10 @@ import sys
 import struct
 import bluetooth._bluetooth as bluez
 
+FILE_NAME = "officesDec19/bt/bt-rssi-%.4d.dat"
+ADDR = '98:4F:EE:03:6E:18'
+RUNS = 5
+
 def printpacket(pkt):
     for c in pkt:
         sys.stdout.write("%02x " % struct.unpack("B",c)[0])
@@ -68,7 +72,7 @@ def write_inquiry_mode(sock, mode):
     if status != 0: return -1
     return 0
 
-def device_inquiry_with_with_rssi(sock):
+def device_inquiry_with_with_rssi(sock, dist):
     # save current filter
     old_filter = sock.getsockopt( bluez.SOL_HCI, bluez.HCI_FILTER, 14)
 
@@ -100,6 +104,10 @@ def device_inquiry_with_with_rssi(sock):
                 rssi = struct.unpack("b", pkt[1+13*nrsp+i])[0]
                 results.append( ( addr, rssi ) )
                 print("[%s] RSSI: [%d]" % (addr, rssi))
+                if addr == ADDR:
+                    print "recording value : %d" % rssi
+                    with open(FILE_NAME % dist, 'a') as f:
+                        f.write('%.3d\n' % rssi)
         elif event == bluez.EVT_INQUIRY_COMPLETE:
             done = True
         elif event == bluez.EVT_CMD_STATUS:
@@ -125,32 +133,48 @@ def device_inquiry_with_with_rssi(sock):
 
     return results
 
-dev_id = 0
-try:
-    sock = bluez.hci_open_dev(dev_id)
-except:
-    print("error accessing bluetooth device...")
-    sys.exit(1)
+def main():
+    if len(sys.argv) < 2:
+        usage()
+    else:
+        distance = int(sys.argv[1])
 
-try:
-    mode = read_inquiry_mode(sock)
-except Exception as e:
-    print("error reading inquiry mode.  ")
-    print("Are you sure this a bluetooth 1.2 device?")
-    print(e)
-    sys.exit(1)
-print("current inquiry mode is %d" % mode)
+        with open(FILE_NAME % distance, 'a') as f:
+            pass
 
-if mode != 1:
-    print("writing inquiry mode...")
-    try:
-        result = write_inquiry_mode(sock, 1)
-    except Exception as e:
-        print("error writing inquiry mode.  Are you sure you're root?")
-        print(e)
-        sys.exit(1)
-    if result != 0:
-        print("error while setting inquiry mode")
-    print("result: %d" % result)
+        dev_id = 0
+        try:
+            sock = bluez.hci_open_dev(dev_id)
+        except:
+            print("error accessing bluetooth device...")
+            sys.exit(1)
 
-device_inquiry_with_with_rssi(sock)
+        try:
+            mode = read_inquiry_mode(sock)
+        except Exception as e:
+            print("error reading inquiry mode.  ")
+            print("Are you sure this a bluetooth 1.2 device?")
+            print(e)
+            sys.exit(1)
+        print("current inquiry mode is %d" % mode)
+
+        if mode != 1:
+            print("writing inquiry mode...")
+            try:
+                result = write_inquiry_mode(sock, 1)
+            except Exception as e:
+                print("error writing inquiry mode.  Are you sure you're root?")
+                print(e)
+                sys.exit(1)
+            if result != 0:
+                print("error while setting inquiry mode")
+            print("result: %d" % result)
+
+        for _ in range(RUNS):
+            device_inquiry_with_with_rssi(sock)
+
+def usage():
+    print "Usage ./bt_rssi.py <%s>" % 'distance'
+    sys.exit(0)
+
+main()
