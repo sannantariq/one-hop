@@ -9,7 +9,7 @@ import sys
 import struct
 import bluetooth._bluetooth as bluez
 
-FILE_NAME = "officesDec19/bt/bt-rssi-%.4d.dat"
+FILE_NAME = "Dec19indoor/bt/bt-rssi-%.4d.dat"
 ADDR = '98:4F:EE:03:6E:18'
 RUNS = 5
 MIN_THRESH = 5

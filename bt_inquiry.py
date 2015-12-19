@@ -11,7 +11,7 @@ import bluetooth._bluetooth as bluez
 
 FILE_NAME = "officesDec19/bt/bt-rssi-%.4d.dat"
 ADDR = '98:4F:EE:03:6E:18'
-RUNS = 5
+RUNS = 10
 MIN_THRESH = 5
 SUCCESSFUL = 0
 
@@ -184,6 +184,7 @@ def main():
         tries = 0
         while SUCCESSFUL < MIN_THRESH and tries < RUNS:
             device_inquiry_with_with_rssi(sock, distance)
+	    tries +=1
 
 def usage():
     print "Usage ./bt_rssi.py <%s>" % 'distance'
