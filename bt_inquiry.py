@@ -171,7 +171,7 @@ def main():
             print("result: %d" % result)
 
         for _ in range(RUNS):
-            device_inquiry_with_with_rssi(sock)
+            device_inquiry_with_with_rssi(sock, distance)
 
 def usage():
     print "Usage ./bt_rssi.py <%s>" % 'distance'
