@@ -97,7 +97,7 @@ def server():
 
 	if (not os.path.isfile(FILE_NAME % DISTANCE)):
 		with open(FILE_NAME % DISTANCE, "a") as f:
-					f.write("%s\t%s\n" % ("Data (bytes)", "Time (ms)"))
+					f.write("%s\t%s\n" % ("Data (bytes)", "Time (s)"))
 	server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
 	server_sock.bind(('', port))
 	server_sock.listen(1)
