@@ -18,7 +18,7 @@ BUFSIZE = 10 * 1024
 ENTER_PRESSED = False
 CONNECTIONS = 0;
 MIN_THRESHOLD = 5
-TIME_THREASHOLD = 4
+TIME_THREASHOLD = 2
 START_TIME = 0
 BYTES_RECEIVED = 0
 MAX_TRIES = 50
@@ -74,7 +74,7 @@ def receieverThread(sock, distance):
 	signal.alarm(TIME_THREASHOLD)
 	while True:
 		try:
-			d = sock.recv(BUFSIZE)
+			d = sock.recv(FILE_SIZE)
 			BYTES_RECEIVED += len(d)
 		except bluetooth.BluetoothError:
 			pass
