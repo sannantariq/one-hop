@@ -25,7 +25,7 @@ MAX_TRIES = 50
 TIMEOUT = 10.0
 END_TIME = 0
 DISTANCE = 0
-FILE_NAME = "bt-tput-%.3d.dat"
+FILE_NAME = "officesDec19/bt/bt-tput-%.4d.dat"
 # data_points = []
 
 def main():
