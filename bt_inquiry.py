@@ -1,3 +1,6 @@
+#!/usr/bin/python
+
+
 # performs a simple device inquiry, followed by a remote name request of each
 # discovered device
 
@@ -9,6 +12,8 @@ import bluetooth._bluetooth as bluez
 FILE_NAME = "officesDec19/bt/bt-rssi-%.4d.dat"
 ADDR = '98:4F:EE:03:6E:18'
 RUNS = 5
+MIN_THRESH = 5
+SUCCESSFUL = 0
 
 def printpacket(pkt):
     for c in pkt:
@@ -73,6 +78,8 @@ def write_inquiry_mode(sock, mode):
     return 0
 
 def device_inquiry_with_with_rssi(sock, dist):
+
+    global SUCCESSFUL
     # save current filter
     old_filter = sock.getsockopt( bluez.SOL_HCI, bluez.HCI_FILTER, 14)
 
@@ -108,6 +115,7 @@ def device_inquiry_with_with_rssi(sock, dist):
                     print "recording value : %d" % rssi
                     with open(FILE_NAME % dist, 'a') as f:
                         f.write('%.3d\n' % rssi)
+                    SUCCESSFUL +=1
         elif event == bluez.EVT_INQUIRY_COMPLETE:
             done = True
         elif event == bluez.EVT_CMD_STATUS:
@@ -134,6 +142,9 @@ def device_inquiry_with_with_rssi(sock, dist):
     return results
 
 def main():
+    global SUCCESSFUL
+    global MIN_THRESH
+    global RUNS
     if len(sys.argv) < 2:
         usage()
     else:
@@ -170,7 +181,8 @@ def main():
                 print("error while setting inquiry mode")
             print("result: %d" % result)
 
-        for _ in range(RUNS):
+        tries = 0
+        while SUCCESSFUL < MIN_THRESH and tries < RUNS:
             device_inquiry_with_with_rssi(sock, distance)
 
 def usage():
