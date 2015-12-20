@@ -25,7 +25,7 @@ MAX_TRIES = 50
 TIMEOUT = 10.0
 END_TIME = 0
 DISTANCE = 0
-FILE_NAME = "Dec19outdoor/bt/bt-tput-%.4d.dat"
+FILE_NAME = "Dec20indoor/bt/bt-tput-%.4d.dat"
 # data_points = []
 
 def main():
